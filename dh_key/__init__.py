@@ -6,6 +6,9 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.exceptions import InvalidSignature
 
 
+PRIME_BYTES = 64
+
+
 class DhKey:
     def __init__(self):
         self.peer_sign_public_key = None
@@ -21,7 +24,7 @@ class DhKey:
         p, q = 0, 0
         # p must be a prime and p-1=2q where q must also be a prime
         while not self.is_prime(p) or not self.is_prime(q):
-            p = int.from_bytes(os.urandom(16), byteorder="big")
+            p = int.from_bytes(os.urandom(PRIME_BYTES), byteorder="big")
             q = (p-1)//2
 
         while True:
@@ -117,7 +120,7 @@ class DHkeyReceiver:
 
     def sign_public_key(self):
         # Convert public key to byte
-        enc_public_key_bytes = self.my_enc_public_key.to_bytes(16, byteorder='big')
+        enc_public_key_bytes = self.my_enc_public_key.to_bytes(PRIME_BYTES, byteorder='big')
         signature = self.my_sign_private_key.sign(
             enc_public_key_bytes,
             padding.PSS(
